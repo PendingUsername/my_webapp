@@ -1,1 +1,4 @@
 venv/
+.history/
+.DS_Store
+.vscode/

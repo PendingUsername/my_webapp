@@ -1,14 +1,22 @@
-// src/App.js
-
-import React from 'react';
-import HelloBeyondMD from './components/HelloBeyondMD';
+import React, { useState } from 'react';
 import CrudManager from './components/CrudManager';
+import Login from './components/Login';
 
 function App() {
+  const [token, setToken] = useState(localStorage.getItem('token') || null);
+
+  const handleSetToken = (newToken) => {
+    localStorage.setItem('token', newToken);
+    setToken(newToken);
+  };
+
   return (
     <div className="App">
-      <HelloBeyondMD />
-      <CrudManager />
+      {token ? (
+        <CrudManager token={token} />
+      ) : (
+        <Login setToken={handleSetToken} />
+      )}
     </div>
   );
 }

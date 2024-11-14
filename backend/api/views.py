@@ -1,10 +1,9 @@
-from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from .models import Item
 from .serializers import ItemSerializer
 
 class ItemViewSet(viewsets.ModelViewSet):
-    queryset = Item.objects.all()  # Specifies that we want all the items from the database
-    serializer_class = ItemSerializer  # Defines how the model data should be serialized
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+    permission_classes = [IsAuthenticated]  # Ensure authentication is required for accessing CRUD features

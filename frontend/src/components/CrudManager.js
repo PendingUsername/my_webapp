@@ -27,7 +27,13 @@ const CrudManager = ({ token }) => {
         },
       })
       .then((response) => setItems(response.data))
-      .catch((error) => console.error('Error fetching items:', error));
+      .catch((error) => {
+        console.error('Error fetching items:', error);
+        if (error.response && error.response.status === 401) {
+          alert('Session expired. Please log in again.');
+          window.location.reload(); // Refresh page to prompt login again
+        }
+      });
   };
 
   // Function to handle changes in input fields for multiple items
@@ -62,7 +68,13 @@ const CrudManager = ({ token }) => {
         setItems([...items, ...responses.map((res) => res.data)]);
         setNewItems([{ name: '', description: '' }]); // Reset input fields to one empty item
       })
-      .catch((error) => console.error('Error adding items:', error));
+      .catch((error) => {
+        console.error('Error adding items:', error);
+        if (error.response && error.response.status === 401) {
+          alert('Session expired. Please log in again.');
+          window.location.reload(); // Refresh page to prompt login again
+        }
+      });
   };
 
   // Function to enter edit mode for an item
@@ -90,7 +102,13 @@ const CrudManager = ({ token }) => {
         setEditMode(false);
         setItemToEdit(null);
       })
-      .catch((error) => console.error('Error updating item:', error));
+      .catch((error) => {
+        console.error('Error updating item:', error);
+        if (error.response && error.response.status === 401) {
+          alert('Session expired. Please log in again.');
+          window.location.reload(); // Refresh page to prompt login again
+        }
+      });
   };
 
   // Function to delete an item
@@ -106,7 +124,13 @@ const CrudManager = ({ token }) => {
       .then(() => {
         setItems(items.filter((item) => item.id !== itemId));
       })
-      .catch((error) => console.error('Error deleting item:', error));
+      .catch((error) => {
+        console.error('Error deleting item:', error);
+        if (error.response && error.response.status === 401) {
+          alert('Session expired. Please log in again.');
+          window.location.reload(); // Refresh page to prompt login again
+        }
+      });
   };
 
   return (

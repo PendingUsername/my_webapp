@@ -21,8 +21,10 @@ const Login = ({ setToken }) => {
     })
     .then(response => {
       // On success, store the access token using setToken
-      const { access } = response.data;
+      const { access, refresh } = response.data;
       setToken(access);
+      localStorage.setItem('accessToken', access);   // Store the access token in localStorage
+      localStorage.setItem('refreshToken', refresh); // Store the refresh token in localStorage
       alert('Login successful!');
     })
     .catch(error => {
@@ -31,9 +33,18 @@ const Login = ({ setToken }) => {
     });
   };
 
+  // Function to handle logout
+  const handleLogout = () => {
+    setToken(null);
+    localStorage.removeItem('accessToken'); // Remove the access token from localStorage
+    localStorage.removeItem('refreshToken'); // Remove the refresh token from localStorage
+    alert('You have been logged out.');
+  };
+
   return (
     <div>
       <h2>Login</h2>
+      <p>Please enter username and password</p>
       <TextField
         label="Username"
         variant="outlined"
@@ -52,6 +63,10 @@ const Login = ({ setToken }) => {
       <br /><br />
       <Button variant="contained" color="primary" onClick={handleLogin}>
         Login
+      </Button>
+      <br /><br />
+      <Button variant="contained" color="secondary" onClick={handleLogout}>
+        Logout
       </Button>
     </div>
   );

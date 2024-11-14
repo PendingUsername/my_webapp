@@ -6,7 +6,7 @@ import { TextField, Button, List, ListItem, ListItemText, IconButton } from '@mu
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const CrudManager = () => {
+const CrudManager = ({ token }) => {
   const [items, setItems] = useState([]);
   const [newItems, setNewItems] = useState([{ name: '', description: '' }]);
   const [editMode, setEditMode] = useState(false);
@@ -19,9 +19,15 @@ const CrudManager = () => {
 
   // Function to fetch all items from the API
   const fetchItems = () => {
-    axios.get('http://localhost:8000/api/items/')
-      .then(response => setItems(response.data))
-      .catch(error => console.error('Error fetching items:', error));
+    console.log('Fetching items with token:', token); // Debugging statement to check token value
+    axios
+      .get('http://localhost:8000/api/items/', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => setItems(response.data))
+      .catch((error) => console.error('Error fetching items:', error));
   };
 
   // Function to handle changes in input fields for multiple items
@@ -38,19 +44,25 @@ const CrudManager = () => {
 
   // Function to add multiple items at once
   const addItems = () => {
-    // Filter out items that are empty
-    const itemsToAdd = newItems.filter(item => item.name.trim() !== '' && item.description.trim() !== '');
+    const itemsToAdd = newItems.filter((item) => item.name.trim() !== '' && item.description.trim() !== '');
     if (itemsToAdd.length === 0) return;
 
-    // Make a POST request for each valid item
-    const addItemRequests = itemsToAdd.map(item => axios.post('http://localhost:8000/api/items/', item));
+    console.log('Adding items with token:', token); // Debugging statement to check token value
+
+    const addItemRequests = itemsToAdd.map((item) =>
+      axios.post('http://localhost:8000/api/items/', item, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+    );
 
     Promise.all(addItemRequests)
-      .then(responses => {
-        setItems([...items, ...responses.map(res => res.data)]);
-        setNewItems([{ name: '', description: '' }]);  // Reset input fields to one empty item
+      .then((responses) => {
+        setItems([...items, ...responses.map((res) => res.data)]);
+        setNewItems([{ name: '', description: '' }]); // Reset input fields to one empty item
       })
-      .catch(error => console.error('Error adding items:', error));
+      .catch((error) => console.error('Error adding items:', error));
   };
 
   // Function to enter edit mode for an item
@@ -64,23 +76,37 @@ const CrudManager = () => {
   const updateItem = () => {
     if (!itemToEdit) return;
 
-    axios.put(`http://localhost:8000/api/items/${itemToEdit.id}/`, newItems[0])
-      .then(response => {
-        setItems(items.map(item => item.id === itemToEdit.id ? response.data : item));
+    console.log('Updating item with token:', token); // Debugging statement to check token value
+
+    axios
+      .put(`http://localhost:8000/api/items/${itemToEdit.id}/`, newItems[0], {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setItems(items.map((item) => (item.id === itemToEdit.id ? response.data : item)));
         setNewItems([{ name: '', description: '' }]);
         setEditMode(false);
         setItemToEdit(null);
       })
-      .catch(error => console.error('Error updating item:', error));
+      .catch((error) => console.error('Error updating item:', error));
   };
 
   // Function to delete an item
   const deleteItem = (itemId) => {
-    axios.delete(`http://localhost:8000/api/items/${itemId}/`)
-      .then(() => {
-        setItems(items.filter(item => item.id !== itemId));
+    console.log('Deleting item with token:', token); // Debugging statement to check token value
+
+    axios
+      .delete(`http://localhost:8000/api/items/${itemId}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
-      .catch(error => console.error('Error deleting item:', error));
+      .then(() => {
+        setItems(items.filter((item) => item.id !== itemId));
+      })
+      .catch((error) => console.error('Error deleting item:', error));
   };
 
   return (
@@ -113,25 +139,28 @@ const CrudManager = () => {
       </Button>
       <Button
         variant="contained"
-        color={editMode ? "secondary" : "primary"}
+        color={editMode ? 'secondary' : 'primary'}
         onClick={editMode ? updateItem : addItems}
         style={{ marginBottom: '20px' }}
       >
-        {editMode ? "Update Item" : "Add Items"}
+        {editMode ? 'Update Item' : 'Add Items'}
       </Button>
 
       <List>
-        {items.map(item => (
-          <ListItem key={item.id} secondaryAction={
-            <>
-              <IconButton edge="end" aria-label="edit" onClick={() => startEditItem(item)}>
-                <EditIcon />
-              </IconButton>
-              <IconButton edge="end" aria-label="delete" onClick={() => deleteItem(item.id)}>
-                <DeleteIcon />
-              </IconButton>
-            </>
-          }>
+        {items.map((item) => (
+          <ListItem
+            key={item.id}
+            secondaryAction={
+              <>
+                <IconButton edge="end" aria-label="edit" onClick={() => startEditItem(item)}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton edge="end" aria-label="delete" onClick={() => deleteItem(item.id)}>
+                  <DeleteIcon />
+                </IconButton>
+              </>
+            }
+          >
             <ListItemText primary={item.name} secondary={item.description} />
           </ListItem>
         ))}

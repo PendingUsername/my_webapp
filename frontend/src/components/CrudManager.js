@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { TextField, Button, List, ListItem, ListItemText, IconButton, Box } from '@mui/material';
+import { TextField, Button, List, ListItem, ListItemText, IconButton, Box, Snackbar, Alert } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GetAppIcon from '@mui/icons-material/GetApp';
@@ -12,6 +12,7 @@ const CrudManager = ({ token }) => {
   const [newItems, setNewItems] = useState([{ name: '', description: '' }]);
   const [editMode, setEditMode] = useState(false);
   const [itemToEdit, setItemToEdit] = useState(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   // Fetch items from the backend API when the component mounts
   useEffect(() => {
@@ -27,7 +28,10 @@ const CrudManager = ({ token }) => {
         },
       })
       .then((response) => setItems(response.data))
-      .catch((error) => console.error('Error fetching items:', error));
+      .catch((error) => {
+        console.error('Error fetching items:', error);
+        showSnackbar('Failed to fetch items.', 'error');
+      });
   };
 
   // Function to handle changes in input fields for multiple items
@@ -59,8 +63,12 @@ const CrudManager = ({ token }) => {
       .then((responses) => {
         setItems([...items, ...responses.map((res) => res.data)]);
         setNewItems([{ name: '', description: '' }]); // Reset input fields to one empty item
+        showSnackbar('Items added successfully!', 'success');
       })
-      .catch((error) => console.error('Error adding items:', error));
+      .catch((error) => {
+        console.error('Error adding items:', error);
+        showSnackbar('Failed to add items.', 'error');
+      });
   };
 
   // Function to enter edit mode for an item
@@ -85,8 +93,12 @@ const CrudManager = ({ token }) => {
         setNewItems([{ name: '', description: '' }]);
         setEditMode(false);
         setItemToEdit(null);
+        showSnackbar('Item updated successfully!', 'success');
       })
-      .catch((error) => console.error('Error updating item:', error));
+      .catch((error) => {
+        console.error('Error updating item:', error);
+        showSnackbar('Failed to update item.', 'error');
+      });
   };
 
   // Function to delete an item
@@ -99,18 +111,27 @@ const CrudManager = ({ token }) => {
       })
       .then(() => {
         setItems(items.filter((item) => item.id !== itemId));
+        showSnackbar('Item deleted successfully!', 'success');
       })
-      .catch((error) => console.error('Error deleting item:', error));
+      .catch((error) => {
+        console.error('Error deleting item:', error);
+        showSnackbar('Failed to delete item.', 'error');
+      });
   };
 
-  // Function to download the resume automatically
+  // Function to download the resume
   const downloadResume = () => {
-    const link = document.createElement('a');
-    link.href = 'http://localhost:8000/static/resume.pdf';
-    link.setAttribute('download', 'resume.pdf');  // Automatically trigger download
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    window.open('http://localhost:8000/static/resume.pdf', '_blank');
+  };
+
+  // Function to show the snackbar message
+  const showSnackbar = (message, severity) => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  // Function to handle closing the snackbar
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
 
   return (
@@ -173,6 +194,16 @@ const CrudManager = ({ token }) => {
           </ListItem>
         ))}
       </List>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { TextField, Button, List, ListItem, ListItemText, IconButton } from '@mui/material';
+import { TextField, Button, List, ListItem, ListItemText, IconButton, Box } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import GetAppIcon from '@mui/icons-material/GetApp';
 
 const CrudManager = ({ token }) => {
   const [items, setItems] = useState([]);
@@ -19,7 +20,6 @@ const CrudManager = ({ token }) => {
 
   // Function to fetch all items from the API
   const fetchItems = () => {
-    console.log('Fetching items with token:', token); // Debugging statement to check token value
     axios
       .get('http://localhost:8000/api/items/', {
         headers: {
@@ -27,13 +27,7 @@ const CrudManager = ({ token }) => {
         },
       })
       .then((response) => setItems(response.data))
-      .catch((error) => {
-        console.error('Error fetching items:', error);
-        if (error.response && error.response.status === 401) {
-          alert('Session expired. Please log in again.');
-          window.location.reload(); // Refresh page to prompt login again
-        }
-      });
+      .catch((error) => console.error('Error fetching items:', error));
   };
 
   // Function to handle changes in input fields for multiple items
@@ -53,8 +47,6 @@ const CrudManager = ({ token }) => {
     const itemsToAdd = newItems.filter((item) => item.name.trim() !== '' && item.description.trim() !== '');
     if (itemsToAdd.length === 0) return;
 
-    console.log('Adding items with token:', token); // Debugging statement to check token value
-
     const addItemRequests = itemsToAdd.map((item) =>
       axios.post('http://localhost:8000/api/items/', item, {
         headers: {
@@ -68,13 +60,7 @@ const CrudManager = ({ token }) => {
         setItems([...items, ...responses.map((res) => res.data)]);
         setNewItems([{ name: '', description: '' }]); // Reset input fields to one empty item
       })
-      .catch((error) => {
-        console.error('Error adding items:', error);
-        if (error.response && error.response.status === 401) {
-          alert('Session expired. Please log in again.');
-          window.location.reload(); // Refresh page to prompt login again
-        }
-      });
+      .catch((error) => console.error('Error adding items:', error));
   };
 
   // Function to enter edit mode for an item
@@ -88,8 +74,6 @@ const CrudManager = ({ token }) => {
   const updateItem = () => {
     if (!itemToEdit) return;
 
-    console.log('Updating item with token:', token); // Debugging statement to check token value
-
     axios
       .put(`http://localhost:8000/api/items/${itemToEdit.id}/`, newItems[0], {
         headers: {
@@ -102,19 +86,11 @@ const CrudManager = ({ token }) => {
         setEditMode(false);
         setItemToEdit(null);
       })
-      .catch((error) => {
-        console.error('Error updating item:', error);
-        if (error.response && error.response.status === 401) {
-          alert('Session expired. Please log in again.');
-          window.location.reload(); // Refresh page to prompt login again
-        }
-      });
+      .catch((error) => console.error('Error updating item:', error));
   };
 
   // Function to delete an item
   const deleteItem = (itemId) => {
-    console.log('Deleting item with token:', token); // Debugging statement to check token value
-
     axios
       .delete(`http://localhost:8000/api/items/${itemId}/`, {
         headers: {
@@ -124,18 +100,33 @@ const CrudManager = ({ token }) => {
       .then(() => {
         setItems(items.filter((item) => item.id !== itemId));
       })
-      .catch((error) => {
-        console.error('Error deleting item:', error);
-        if (error.response && error.response.status === 401) {
-          alert('Session expired. Please log in again.');
-          window.location.reload(); // Refresh page to prompt login again
-        }
-      });
+      .catch((error) => console.error('Error deleting item:', error));
+  };
+
+  // Function to download the resume automatically
+  const downloadResume = () => {
+    const link = document.createElement('a');
+    link.href = 'http://localhost:8000/static/resume.pdf';
+    link.setAttribute('download', 'resume.pdf');  // Automatically trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
     <div>
-      <h2>Manage Items</h2>
+      <Box display="flex" justifyContent="space-between" alignItems="center" marginBottom="20px">
+        <h2>Manage Items</h2>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<GetAppIcon />}
+          onClick={downloadResume}
+        >
+          Download Resume
+        </Button>
+      </Box>
+
       {newItems.map((item, index) => (
         <div key={index} style={{ marginBottom: '10px' }}>
           <TextField
@@ -154,21 +145,14 @@ const CrudManager = ({ token }) => {
         </div>
       ))}
 
-      <Button
-        variant="contained"
-        onClick={addNewItemField}
-        style={{ marginBottom: '20px', marginRight: '10px' }}
-      >
-        Add Another Item
-      </Button>
-      <Button
-        variant="contained"
-        color={editMode ? 'secondary' : 'primary'}
-        onClick={editMode ? updateItem : addItems}
-        style={{ marginBottom: '20px' }}
-      >
-        {editMode ? 'Update Item' : 'Add Items'}
-      </Button>
+      <Box display="flex" gap="10px" marginBottom="20px">
+        <Button variant="contained" onClick={addNewItemField}>
+          Add Another Item
+        </Button>
+        <Button variant="contained" color={editMode ? 'secondary' : 'primary'} onClick={editMode ? updateItem : addItems}>
+          {editMode ? 'Update Item' : 'Add Items'}
+        </Button>
+      </Box>
 
       <List>
         {items.map((item) => (

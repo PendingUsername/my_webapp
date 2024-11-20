@@ -14,8 +14,6 @@ This project is a full-stack web application that allows users to log in and man
 - [Makefile Commands](#makefile-commands)
 - [Testing](#testing)
 - [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Getting Started
 

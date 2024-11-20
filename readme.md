@@ -104,7 +104,7 @@ Once the application is up and running, you can access it as follows:
 
 ## Creating a Superuser
 
-Users can create a superuser by navigating to the login page and clicking on the "Create Superuser" button. You will be prompted to provide a username, password, and email to create a superuser account directly from the UI.
+Users can create a superuser by navigating to the login page and clicking on the "Create Superuser" button. You will be prompted to provide a username and password to create a superuser account directly from the UI.
 
 Alternatively, you can create a superuser from the command line:
 
@@ -112,7 +112,7 @@ Alternatively, you can create a superuser from the command line:
 make createsuperuser
 ```
 
-This will guide you through providing a username, email, and password for the superuser.
+This will guide you through providing a username and password for the superuser.
 
 ## Makefile Commands
 

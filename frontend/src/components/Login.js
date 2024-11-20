@@ -153,14 +153,14 @@ const Login = ({ setToken }) => {
               padding: '10px',
             }}
           >
-            Create Superuser
+            Create User
           </Button>
         </Box>
       </Paper>
 
       {/* Dialog for Creating Superuser */}
       <Dialog open={isSuperuserDialogOpen} onClose={handleCloseSuperuserDialog}>
-        <DialogTitle>Create Superuser</DialogTitle>
+        <DialogTitle>Create User</DialogTitle>
         <DialogContent>
           <TextField
             label="Username"
@@ -194,7 +194,7 @@ const Login = ({ setToken }) => {
             Cancel
           </Button>
           <Button onClick={handleCreateSuperuser} color="secondary">
-            Create Superuser
+            Create user
           </Button>
         </DialogActions>
       </Dialog>

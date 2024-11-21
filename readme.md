@@ -191,4 +191,4 @@ npm test
    - If issues persist, run `docker-compose down -v` to remove all volumes and start fresh.
 
 4. **Creating Superusers:**
-   - Make sure to click "Create Superuser" from the login page or use the appropriate API endpoint (`http://localhost:8000/api/create-superuser/`)
+   - Make sure to click "Create User" from the login page or use the appropriate API endpoint (`http://localhost:8000/api/create-superuser/`)

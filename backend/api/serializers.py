@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from .models import Item
 
+# Serializer class to convert Item model instances into JSON format and vice versa.
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Item
-        fields = '__all__'  # This will include all fields in the Item model in the serialized output
+        model = Item  # Define the model to serialize
+        fields = '__all__'  # Include all fields from the Item model
+

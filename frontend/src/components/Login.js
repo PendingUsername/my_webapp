@@ -15,24 +15,31 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
+// Login component to handle user login and superuser creation
 const Login = ({ setToken }) => {
+  // State for login credentials
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  // State for superuser dialog and new superuser details
   const [isSuperuserDialogOpen, setIsSuperuserDialogOpen] = useState(false);
   const [newSuperuserDetails, setNewSuperuserDetails] = useState({
     newUsername: '',
     newPassword: '',
     confirmPassword: '',
   });
-  const theme = useTheme(); // Use the theme for consistent styling
 
-  // Function to handle login
+  // Use theme to apply consistent styling
+  const theme = useTheme();
+
+  // Handle user login
   const handleLogin = () => {
     if (!username || !password) {
       alert('Please enter a username and password');
       return;
     }
 
+    // Make API request to authenticate user and obtain token
     axios
       .post('http://localhost:8000/api/token/', {
         username: username,
@@ -40,7 +47,7 @@ const Login = ({ setToken }) => {
       })
       .then((response) => {
         const { access } = response.data;
-        setToken(access);
+        setToken(access); // Store token for authenticated requests
         alert('Login successful!');
       })
       .catch((error) => {
@@ -49,18 +56,18 @@ const Login = ({ setToken }) => {
       });
   };
 
-  // Function to open the create superuser dialog
+  // Open dialog to create a new superuser
   const handleOpenSuperuserDialog = () => {
     setIsSuperuserDialogOpen(true);
   };
 
-  // Function to close the create superuser dialog
+  // Close superuser creation dialog and reset fields
   const handleCloseSuperuserDialog = () => {
     setIsSuperuserDialogOpen(false);
     setNewSuperuserDetails({ newUsername: '', newPassword: '', confirmPassword: '' });
   };
 
-  // Function to handle changes in superuser form inputs
+  // Handle input changes for the new superuser form
   const handleSuperuserInputChange = (field, value) => {
     setNewSuperuserDetails((prevDetails) => ({
       ...prevDetails,
@@ -68,20 +75,23 @@ const Login = ({ setToken }) => {
     }));
   };
 
-  // Function to handle superuser creation
+  // Handle creation of a new superuser
   const handleCreateSuperuser = () => {
     const { newUsername, newPassword, confirmPassword } = newSuperuserDetails;
 
+    // Ensure all fields are filled
     if (!newUsername || !newPassword || !confirmPassword) {
       alert('Please fill in all fields');
       return;
     }
 
+    // Check if passwords match
     if (newPassword !== confirmPassword) {
       alert('Passwords do not match');
       return;
     }
 
+    // Make API request to create a new superuser
     axios
       .post('http://localhost:8000/api/create-superuser/', {
         username: newUsername,
@@ -89,7 +99,7 @@ const Login = ({ setToken }) => {
       })
       .then((response) => {
         alert(response.data.message);
-        handleCloseSuperuserDialog(); // Close the dialog after successful superuser creation
+        handleCloseSuperuserDialog(); // Close dialog on success
       })
       .catch((error) => {
         console.error('Error creating superuser:', error);
@@ -119,7 +129,7 @@ const Login = ({ setToken }) => {
           variant="outlined"
           fullWidth
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => setUsername(e.target.value)} // Update username state
           style={{ marginBottom: '20px' }}
         />
         <TextField
@@ -128,14 +138,14 @@ const Login = ({ setToken }) => {
           variant="outlined"
           fullWidth
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)} // Update password state
           style={{ marginBottom: '20px' }}
         />
         <Box display="flex" gap="10px" marginBottom="20px">
           <Button
             variant="contained"
             color="primary"
-            onClick={handleLogin}
+            onClick={handleLogin} // Trigger login function
             fullWidth
             style={{
               padding: '10px',
@@ -147,7 +157,7 @@ const Login = ({ setToken }) => {
           <Button
             variant="contained"
             color="secondary"
-            onClick={handleOpenSuperuserDialog}
+            onClick={handleOpenSuperuserDialog} // Open superuser creation dialog
             fullWidth
             style={{
               padding: '10px',
@@ -158,7 +168,7 @@ const Login = ({ setToken }) => {
         </Box>
       </Paper>
 
-      {/* Dialog for Creating Superuser */}
+      {/* Dialog for creating a new superuser */}
       <Dialog open={isSuperuserDialogOpen} onClose={handleCloseSuperuserDialog}>
         <DialogTitle>Create User</DialogTitle>
         <DialogContent>
@@ -167,7 +177,7 @@ const Login = ({ setToken }) => {
             variant="outlined"
             fullWidth
             value={newSuperuserDetails.newUsername}
-            onChange={(e) => handleSuperuserInputChange('newUsername', e.target.value)}
+            onChange={(e) => handleSuperuserInputChange('newUsername', e.target.value)} // Update new superuser username
             style={{ marginBottom: '20px' }}
           />
           <TextField
@@ -176,7 +186,7 @@ const Login = ({ setToken }) => {
             variant="outlined"
             fullWidth
             value={newSuperuserDetails.newPassword}
-            onChange={(e) => handleSuperuserInputChange('newPassword', e.target.value)}
+            onChange={(e) => handleSuperuserInputChange('newPassword', e.target.value)} // Update new superuser password
             style={{ marginBottom: '20px' }}
           />
           <TextField
@@ -185,7 +195,7 @@ const Login = ({ setToken }) => {
             variant="outlined"
             fullWidth
             value={newSuperuserDetails.confirmPassword}
-            onChange={(e) => handleSuperuserInputChange('confirmPassword', e.target.value)}
+            onChange={(e) => handleSuperuserInputChange('confirmPassword', e.target.value)} // Update password confirmation
             style={{ marginBottom: '20px' }}
           />
         </DialogContent>
@@ -194,7 +204,7 @@ const Login = ({ setToken }) => {
             Cancel
           </Button>
           <Button onClick={handleCreateSuperuser} color="secondary">
-            Create user
+            Create User
           </Button>
         </DialogActions>
       </Dialog>

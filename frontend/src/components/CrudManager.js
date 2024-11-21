@@ -7,19 +7,20 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GetAppIcon from '@mui/icons-material/GetApp';
 
+// Component to manage CRUD operations
 const CrudManager = ({ token }) => {
-  const [items, setItems] = useState([]);
-  const [newItems, setNewItems] = useState([{ name: '', description: '' }]);
-  const [editMode, setEditMode] = useState(false);
-  const [itemToEdit, setItemToEdit] = useState(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [items, setItems] = useState([]); // State to store items fetched from the backend
+  const [newItems, setNewItems] = useState([{ name: '', description: '' }]); // State for new items to be added
+  const [editMode, setEditMode] = useState(false); // State to toggle edit mode
+  const [itemToEdit, setItemToEdit] = useState(null); // State to store item being edited
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' }); // State for snackbar messages
 
-  // Fetch items from the backend API when the component mounts
+  // Fetch items when the component mounts
   useEffect(() => {
     fetchItems();
   }, []);
 
-  // Function to fetch all items from the API
+  // Fetch items from the backend API
   const fetchItems = () => {
     axios
       .get('http://localhost:8000/api/items/', {
@@ -27,28 +28,28 @@ const CrudManager = ({ token }) => {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then((response) => setItems(response.data))
+      .then((response) => setItems(response.data)) // Update items state with fetched data
       .catch((error) => {
         console.error('Error fetching items:', error);
         showSnackbar('Failed to fetch items.', 'error');
       });
   };
 
-  // Function to handle changes in input fields for multiple items
+  // Update state when input fields are changed
   const handleItemChange = (index, field, value) => {
     const updatedItems = [...newItems];
     updatedItems[index][field] = value;
-    setNewItems(updatedItems);
+    setNewItems(updatedItems); // Update newItems state with modified values
   };
 
-  // Function to add a new empty item field
+  // Add an empty input field for adding a new item
   const addNewItemField = () => {
     setNewItems([...newItems, { name: '', description: '' }]);
   };
 
-  // Function to add multiple items at once
+  // Add multiple items to the backend
   const addItems = () => {
-    const itemsToAdd = newItems.filter((item) => item.name.trim() !== '' && item.description.trim() !== '');
+    const itemsToAdd = newItems.filter((item) => item.name.trim() !== '' && item.description.trim() !== ''); // Filter out empty items
     if (itemsToAdd.length === 0) return;
 
     const addItemRequests = itemsToAdd.map((item) =>
@@ -59,10 +60,11 @@ const CrudManager = ({ token }) => {
       })
     );
 
+    // Send requests to add items in parallel
     Promise.all(addItemRequests)
       .then((responses) => {
-        setItems([...items, ...responses.map((res) => res.data)]);
-        setNewItems([{ name: '', description: '' }]); // Reset input fields to one empty item
+        setItems([...items, ...responses.map((res) => res.data)]); // Update items state with added items
+        setNewItems([{ name: '', description: '' }]); // Reset input fields
         showSnackbar('Items added successfully!', 'success');
       })
       .catch((error) => {
@@ -71,14 +73,14 @@ const CrudManager = ({ token }) => {
       });
   };
 
-  // Function to enter edit mode for an item
+  // Start edit mode for an item
   const startEditItem = (item) => {
     setEditMode(true);
     setItemToEdit(item);
-    setNewItems([{ name: item.name, description: item.description }]);
+    setNewItems([{ name: item.name, description: item.description }]); // Pre-fill input fields with item details
   };
 
-  // Function to update an item
+  // Update an item in the backend
   const updateItem = () => {
     if (!itemToEdit) return;
 
@@ -89,9 +91,9 @@ const CrudManager = ({ token }) => {
         },
       })
       .then((response) => {
-        setItems(items.map((item) => (item.id === itemToEdit.id ? response.data : item)));
-        setNewItems([{ name: '', description: '' }]);
-        setEditMode(false);
+        setItems(items.map((item) => (item.id === itemToEdit.id ? response.data : item))); // Update item in items state
+        setNewItems([{ name: '', description: '' }]); // Reset input fields
+        setEditMode(false); // Exit edit mode
         setItemToEdit(null);
         showSnackbar('Item updated successfully!', 'success');
       })
@@ -101,7 +103,7 @@ const CrudManager = ({ token }) => {
       });
   };
 
-  // Function to delete an item
+  // Delete an item from the backend
   const deleteItem = (itemId) => {
     axios
       .delete(`http://localhost:8000/api/items/${itemId}/`, {
@@ -110,7 +112,7 @@ const CrudManager = ({ token }) => {
         },
       })
       .then(() => {
-        setItems(items.filter((item) => item.id !== itemId));
+        setItems(items.filter((item) => item.id !== itemId)); // Remove item from items state
         showSnackbar('Item deleted successfully!', 'success');
       })
       .catch((error) => {
@@ -119,17 +121,17 @@ const CrudManager = ({ token }) => {
       });
   };
 
-  // Function to download the resume
+  // Download the resume file
   const downloadResume = () => {
-    window.open('http://localhost:8000/static/resume.pdf', '_blank');
+    window.open('http://localhost:8000/static/resume.pdf', '_blank'); // Open resume link in a new tab
   };
 
-  // Function to show the snackbar message
+  // Show a snackbar message with a given severity level
   const showSnackbar = (message, severity) => {
     setSnackbar({ open: true, message, severity });
   };
 
-  // Function to handle closing the snackbar
+  // Close the snackbar message
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
@@ -148,6 +150,7 @@ const CrudManager = ({ token }) => {
         </Button>
       </Box>
 
+      {/* Render input fields for adding new items */}
       {newItems.map((item, index) => (
         <div key={index} style={{ marginBottom: '10px' }}>
           <TextField
@@ -175,6 +178,7 @@ const CrudManager = ({ token }) => {
         </Button>
       </Box>
 
+      {/* List of items */}
       <List>
         {items.map((item) => (
           <ListItem
@@ -195,6 +199,7 @@ const CrudManager = ({ token }) => {
         ))}
       </List>
 
+      {/* Snackbar for showing success or error messages */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}

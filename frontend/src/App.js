@@ -11,32 +11,38 @@ import CrudManager from './components/CrudManager';
 import Login from './components/Login';
 
 function App() {
+  // State for storing the token to manage user authentication
   const [token, setToken] = useState(() => {
-    return localStorage.getItem('token') || null;
+    return localStorage.getItem('token') || null; // Initialize token from localStorage
   });
 
+  // State to manage the dark/light mode of the theme
   const [darkMode, setDarkMode] = useState(false);
 
+  // Store or remove token in localStorage whenever token state changes
   useEffect(() => {
     if (token) {
-      localStorage.setItem('token', token);
+      localStorage.setItem('token', token); // Save token if available
     } else {
-      localStorage.removeItem('token');
+      localStorage.removeItem('token'); // Remove token if not available
     }
   }, [token]);
 
+  // Function to handle user logout
   const handleLogout = () => {
-    setToken(null);
+    setToken(null); // Clear token
     alert('You have been logged out.');
   };
 
+  // Function to toggle between dark and light mode
   const handleThemeChange = () => {
     setDarkMode(!darkMode);
   };
 
+  // Create a theme with dark or light mode based on user preference
   const theme = createTheme({
     palette: {
-      mode: darkMode ? 'dark' : 'light',
+      mode: darkMode ? 'dark' : 'light', // Set the mode based on darkMode state
       primary: {
         main: '#1976d2',
       },
@@ -48,13 +54,14 @@ function App() {
       MuiButton: {
         styleOverrides: {
           root: {
-            margin: '5px',
+            margin: '5px', // Add margin to all buttons for consistent spacing
           },
         },
       },
     },
   });
 
+  // If no token is present, render the Login component
   if (!token) {
     return <Login setToken={setToken} />;
   }
@@ -68,11 +75,11 @@ function App() {
             BeyondMD CRUD Application
           </Typography>
           <IconButton onClick={handleThemeChange} color="inherit">
-            {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+            {darkMode ? <Brightness7Icon /> : <Brightness4Icon />} {/* Toggle dark/light mode icon */}
           </IconButton>
-          <Switch checked={darkMode} onChange={handleThemeChange} />
+          <Switch checked={darkMode} onChange={handleThemeChange} /> {/* Dark/light mode switch */}
           <button
-            onClick={handleLogout}
+            onClick={handleLogout} // Logout user on button click
             style={{
               padding: '10px',
               background: darkMode ? '#f44336' : '#1976d2',
@@ -86,8 +93,8 @@ function App() {
         </Toolbar>
       </AppBar>
       <div style={{ padding: '20px' }}>
-        <HelloBeyondMD />
-        <CrudManager token={token} />
+        <HelloBeyondMD /> {/* Display a simple greeting component */}
+        <CrudManager token={token} /> {/* CRUD management component, passing the token for API requests */}
       </div>
     </ThemeProvider>
   );

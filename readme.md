@@ -1,5 +1,10 @@
 # Project Name: BeyondMD crud app
 
+![Login Page](./backend/static/login.png)
+![Crud](./backend/static/crud.png)
+![Crud dark](./backend/static/crud_dark.png)
+![Django](./backend/staic/django_admin.png)
+
 This project is a full-stack web application that allows users to log in and manage data. It is built with Django for the backend and React for the frontend, containerized using Docker. The application also includes functionality to create superusers via a user-friendly interface.
 
 ## Table of Contents

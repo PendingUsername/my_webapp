@@ -1,26 +1,37 @@
-// src/components/CrudManager.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { TextField, Button, List, ListItem, ListItemText, IconButton, Box, Snackbar, Alert } from '@mui/material';
+import {
+  TextField,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  IconButton,
+  Box,
+  Snackbar,
+  Alert,
+  Zoom,
+  Slide,
+  Collapse
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GetAppIcon from '@mui/icons-material/GetApp';
 
-// Component to manage CRUD operations
 const CrudManager = ({ token }) => {
-  const [items, setItems] = useState([]); // State to store items fetched from the backend
-  const [newItems, setNewItems] = useState([{ name: '', description: '' }]); // State for new items to be added
-  const [editMode, setEditMode] = useState(false); // State to toggle edit mode
-  const [itemToEdit, setItemToEdit] = useState(null); // State to store item being edited
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' }); // State for snackbar messages
+  const [items, setItems] = useState([]);
+  const [newItems, setNewItems] = useState([{ name: '', description: '' }]);
+  const [editMode, setEditMode] = useState(false);
+  const [itemToEdit, setItemToEdit] = useState(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [itemsToDelete, setItemsToDelete] = useState({});
 
-  // Fetch items when the component mounts
+  // Fetch items from the backend API when the component mounts
   useEffect(() => {
     fetchItems();
   }, []);
 
-  // Fetch items from the backend API
+  // Function to fetch all items from the API
   const fetchItems = () => {
     axios
       .get('http://localhost:8000/api/items/', {
@@ -28,28 +39,28 @@ const CrudManager = ({ token }) => {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then((response) => setItems(response.data)) // Update items state with fetched data
+      .then((response) => setItems(response.data))
       .catch((error) => {
         console.error('Error fetching items:', error);
         showSnackbar('Failed to fetch items.', 'error');
       });
   };
 
-  // Update state when input fields are changed
+  // Function to handle changes in input fields for multiple items
   const handleItemChange = (index, field, value) => {
     const updatedItems = [...newItems];
     updatedItems[index][field] = value;
-    setNewItems(updatedItems); // Update newItems state with modified values
+    setNewItems(updatedItems);
   };
 
-  // Add an empty input field for adding a new item
+  // Function to add a new empty item field
   const addNewItemField = () => {
     setNewItems([...newItems, { name: '', description: '' }]);
   };
 
-  // Add multiple items to the backend
+  // Function to add multiple items at once
   const addItems = () => {
-    const itemsToAdd = newItems.filter((item) => item.name.trim() !== '' && item.description.trim() !== ''); // Filter out empty items
+    const itemsToAdd = newItems.filter((item) => item.name.trim() !== '' && item.description.trim() !== '');
     if (itemsToAdd.length === 0) return;
 
     const addItemRequests = itemsToAdd.map((item) =>
@@ -60,11 +71,10 @@ const CrudManager = ({ token }) => {
       })
     );
 
-    // Send requests to add items in parallel
     Promise.all(addItemRequests)
       .then((responses) => {
-        setItems([...items, ...responses.map((res) => res.data)]); // Update items state with added items
-        setNewItems([{ name: '', description: '' }]); // Reset input fields
+        setItems([...items, ...responses.map((res) => res.data)]);
+        setNewItems([{ name: '', description: '' }]); // Reset input fields to one empty item
         showSnackbar('Items added successfully!', 'success');
       })
       .catch((error) => {
@@ -73,14 +83,14 @@ const CrudManager = ({ token }) => {
       });
   };
 
-  // Start edit mode for an item
+  // Function to enter edit mode for an item
   const startEditItem = (item) => {
     setEditMode(true);
     setItemToEdit(item);
-    setNewItems([{ name: item.name, description: item.description }]); // Pre-fill input fields with item details
+    setNewItems([{ name: item.name, description: item.description }]);
   };
 
-  // Update an item in the backend
+  // Function to update an item
   const updateItem = () => {
     if (!itemToEdit) return;
 
@@ -91,9 +101,9 @@ const CrudManager = ({ token }) => {
         },
       })
       .then((response) => {
-        setItems(items.map((item) => (item.id === itemToEdit.id ? response.data : item))); // Update item in items state
-        setNewItems([{ name: '', description: '' }]); // Reset input fields
-        setEditMode(false); // Exit edit mode
+        setItems(items.map((item) => (item.id === itemToEdit.id ? response.data : item)));
+        setNewItems([{ name: '', description: '' }]);
+        setEditMode(false);
         setItemToEdit(null);
         showSnackbar('Item updated successfully!', 'success');
       })
@@ -103,35 +113,40 @@ const CrudManager = ({ token }) => {
       });
   };
 
-  // Delete an item from the backend
+  // Function to delete an item with animation
   const deleteItem = (itemId) => {
-    axios
-      .delete(`http://localhost:8000/api/items/${itemId}/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then(() => {
-        setItems(items.filter((item) => item.id !== itemId)); // Remove item from items state
-        showSnackbar('Item deleted successfully!', 'success');
-      })
-      .catch((error) => {
-        console.error('Error deleting item:', error);
-        showSnackbar('Failed to delete item.', 'error');
-      });
+    // Track item to delete for collapsing animation
+    setItemsToDelete((prev) => ({ ...prev, [itemId]: true }));
+
+    setTimeout(() => {
+      axios
+        .delete(`http://localhost:8000/api/items/${itemId}/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(() => {
+          setItems(items.filter((item) => item.id !== itemId));
+          showSnackbar('Item deleted successfully!', 'success');
+        })
+        .catch((error) => {
+          console.error('Error deleting item:', error);
+          showSnackbar('Failed to delete item.', 'error');
+        });
+    }, 500); // Adjust timeout to match the duration of the collapse animation
   };
 
-  // Download the resume file
+  // Function to download the resume
   const downloadResume = () => {
-    window.open('http://localhost:8000/static/resume.pdf', '_blank'); // Open resume link in a new tab
+    window.open('http://localhost:8000/static/resume.pdf', '_blank');
   };
 
-  // Show a snackbar message with a given severity level
+  // Function to show the snackbar message
   const showSnackbar = (message, severity) => {
     setSnackbar({ open: true, message, severity });
   };
 
-  // Close the snackbar message
+  // Function to handle closing the snackbar
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
@@ -150,7 +165,6 @@ const CrudManager = ({ token }) => {
         </Button>
       </Box>
 
-      {/* Render input fields for adding new items */}
       {newItems.map((item, index) => (
         <div key={index} style={{ marginBottom: '10px' }}>
           <TextField
@@ -178,28 +192,35 @@ const CrudManager = ({ token }) => {
         </Button>
       </Box>
 
-      {/* List of items */}
       <List>
         {items.map((item) => (
-          <ListItem
+          <Collapse
+            in={!itemsToDelete[item.id]} // Collapse the item when marked for deletion
+            timeout={500}
             key={item.id}
-            secondaryAction={
-              <>
-                <IconButton edge="end" aria-label="edit" onClick={() => startEditItem(item)}>
-                  <EditIcon />
-                </IconButton>
-                <IconButton edge="end" aria-label="delete" onClick={() => deleteItem(item.id)}>
-                  <DeleteIcon />
-                </IconButton>
-              </>
-            }
           >
-            <ListItemText primary={item.name} secondary={item.description} />
-          </ListItem>
+            <Slide direction="right" in={true} timeout={500}>
+              <ListItem
+                secondaryAction={
+                  <>
+                    <IconButton edge="end" aria-label="edit" onClick={() => startEditItem(item)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton edge="end" aria-label="delete" onClick={() => deleteItem(item.id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </>
+                }
+              >
+                <Zoom in={true} timeout={500}>
+                  <ListItemText primary={item.name} secondary={item.description} />
+                </Zoom>
+              </ListItem>
+            </Slide>
+          </Collapse>
         ))}
       </List>
 
-      {/* Snackbar for showing success or error messages */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}

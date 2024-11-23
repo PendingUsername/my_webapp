@@ -17,7 +17,7 @@ import {
   Collapse,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'; // Import Trash Icon
 import GetAppIcon from '@mui/icons-material/GetApp';
 
 const CrudManager = ({ token }) => {
@@ -58,6 +58,12 @@ const CrudManager = ({ token }) => {
   // Function to add a new empty item field
   const addNewItemField = () => {
     setNewItems([...newItems, { name: '', description: '' }]);
+  };
+
+  // Function to remove an item field from the new items list
+  const removeNewItemField = (index) => {
+    const updatedItems = newItems.filter((_, i) => i !== index);
+    setNewItems(updatedItems);
   };
 
   // Function to add multiple items at once
@@ -176,20 +182,29 @@ const CrudManager = ({ token }) => {
       </Box>
 
       {newItems.map((item, index) => (
-        <div key={index} style={{ marginBottom: '10px' }}>
+        <div key={index} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
           <TextField
             value={item.name}
             onChange={(e) => handleItemChange(index, 'name', e.target.value)}
             label="Item Name"
             variant="outlined"
-            style={{ marginRight: '10px' }}
+            style={{ marginRight: '10px', flexGrow: 1 }}
           />
           <TextField
             value={item.description}
             onChange={(e) => handleItemChange(index, 'description', e.target.value)}
             label="Item Description"
             variant="outlined"
+            style={{ flexGrow: 1 }}
           />
+          <IconButton
+            edge="end"
+            aria-label="delete"
+            onClick={() => removeNewItemField(index)}
+            style={{ marginLeft: '10px' }}
+          >
+            <DeleteOutlineIcon /> {/* Use Trash Icon */}
+          </IconButton>
         </div>
       ))}
 
@@ -217,7 +232,7 @@ const CrudManager = ({ token }) => {
                       <EditIcon />
                     </IconButton>
                     <IconButton edge="end" aria-label="delete" onClick={() => deleteItem(item.id)}>
-                      <DeleteIcon />
+                      <DeleteOutlineIcon />
                     </IconButton>
                   </>
                 }

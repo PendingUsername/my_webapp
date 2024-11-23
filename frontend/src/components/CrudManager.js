@@ -17,8 +17,9 @@ import {
   Collapse,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'; // Import Trash Icon
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import GetAppIcon from '@mui/icons-material/GetApp';
+import { saveAs } from 'file-saver';
 
 const CrudManager = ({ token }) => {
   const [items, setItems] = useState([]);
@@ -167,6 +168,24 @@ const CrudManager = ({ token }) => {
     setSnackbar({ ...snackbar, open: false });
   };
 
+  // Function to export items to CSV
+  const exportToCSV = () => {
+    if (items.length === 0) {
+      showSnackbar('No items to export.', 'warning');
+      return;
+    }
+
+    const csvRows = [
+      ['ID', 'Name', 'Description'], // Header row
+      ...items.map((item) => [item.id, item.name, item.description]), // Data rows
+    ];
+
+    const csvContent = csvRows.map((row) => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    saveAs(blob, 'items.csv');
+    showSnackbar('Items exported successfully!', 'success');
+  };
+
   return (
     <div>
       <Box display="flex" justifyContent="space-between" alignItems="center" marginBottom="20px">
@@ -190,7 +209,7 @@ const CrudManager = ({ token }) => {
             variant="outlined"
             style={{ marginRight: '10px', minWidth: '200px' }}
             InputProps={{
-              style: { maxWidth: '400px' }, // Set a maximum width to allow dynamic expansion
+              style: { maxWidth: '400px' },
             }}
           />
           <TextField
@@ -200,7 +219,7 @@ const CrudManager = ({ token }) => {
             variant="outlined"
             style={{ minWidth: '200px' }}
             InputProps={{
-              style: { maxWidth: '400px' }, // Set a maximum width to allow dynamic expansion
+              style: { maxWidth: '400px' },
             }}
           />
           <IconButton
@@ -209,7 +228,7 @@ const CrudManager = ({ token }) => {
             onClick={() => removeNewItemField(index)}
             style={{ marginLeft: '10px' }}
           >
-            <DeleteOutlineIcon /> {/* Use Trash Icon */}
+            <DeleteOutlineIcon />
           </IconButton>
         </div>
       ))}
@@ -226,7 +245,7 @@ const CrudManager = ({ token }) => {
       <List>
         {items.map((item) => (
           <Collapse
-            in={!itemsToDelete[item.id]} // Collapse the item when marked for deletion
+            in={!itemsToDelete[item.id]}
             timeout={500}
             key={item.id}
           >
@@ -251,6 +270,16 @@ const CrudManager = ({ token }) => {
           </Collapse>
         ))}
       </List>
+
+      <Box marginY="20px">
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={exportToCSV}
+        >
+          Export to CSV
+        </Button>
+      </Box>
 
       <Snackbar
         open={snackbar.open}

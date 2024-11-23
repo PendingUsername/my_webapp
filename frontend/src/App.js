@@ -15,6 +15,7 @@ import {
   ListItemText,
   Divider,
   Box,
+  Button,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
@@ -34,6 +35,9 @@ function App() {
 
   // State to manage drawer visibility
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // State to store items for exporting
+  const [items, setItems] = useState([]);
 
   // Store or remove token in localStorage whenever token state changes
   useEffect(() => {
@@ -135,7 +139,7 @@ function App() {
 
       <div style={{ padding: '20px' }}>
         <HelloBeyondMD /> {/* Display a simple greeting component */}
-        <CrudManager token={token} /> {/* CRUD management component, passing the token for API requests */}
+        <CrudManager token={token} setItems={setItems} /> {/* CRUD management component, passing the token for API requests */}
       </div>
     </ThemeProvider>
   );

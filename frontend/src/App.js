@@ -3,7 +3,20 @@
 import React, { useState, useEffect } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { AppBar, Toolbar, Typography, IconButton, Switch, Button } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Switch,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  Box,
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import HelloBeyondMD from './components/HelloBeyondMD';
@@ -18,6 +31,9 @@ function App() {
 
   // State to manage the dark/light mode of the theme
   const [darkMode, setDarkMode] = useState(false);
+
+  // State to manage drawer visibility
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Store or remove token in localStorage whenever token state changes
   useEffect(() => {
@@ -39,6 +55,11 @@ function App() {
     setDarkMode(!darkMode);
   };
 
+  // Function to toggle the drawer
+  const toggleDrawer = (open) => {
+    setDrawerOpen(open);
+  };
+
   // Create a theme with dark or light mode based on user preference
   const theme = createTheme({
     palette: {
@@ -48,15 +69,6 @@ function App() {
       },
       secondary: {
         main: '#dc004e',
-      },
-    },
-    typography: {
-      fontFamily: 'Roboto, Arial, sans-serif',
-      h6: {
-        fontWeight: 700,
-      },
-      button: {
-        textTransform: 'none',
       },
     },
     components: {
@@ -87,16 +99,40 @@ function App() {
             {darkMode ? <Brightness7Icon /> : <Brightness4Icon />} {/* Toggle dark/light mode icon */}
           </IconButton>
           <Switch checked={darkMode} onChange={handleThemeChange} /> {/* Dark/light mode switch */}
-          <Button
-            onClick={handleLogout} // Logout user on button click
-            variant="contained"
-            color="secondary"
-            style={{ marginLeft: '10px' }}
+          <IconButton
+            edge="end"
+            color="inherit"
+            aria-label="menu"
+            onClick={() => toggleDrawer(true)}
           >
-            Logout
-          </Button>
+            <MenuIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
+
+      {/* Drawer component */}
+      <Drawer anchor="right" open={drawerOpen} onClose={() => toggleDrawer(false)}>
+        <Box
+          sx={{ width: 250 }}
+          role="presentation"
+          onClick={() => toggleDrawer(false)}
+          onKeyDown={() => toggleDrawer(false)}
+        >
+          <List>
+            <ListItem button onClick={handleThemeChange}>
+              <IconButton edge="start" color="inherit">
+                {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+              </IconButton>
+              <ListItemText primary="Toggle Dark Mode" />
+            </ListItem>
+            <Divider />
+            <ListItem button onClick={handleLogout}>
+              <ListItemText primary="Logout" />
+            </ListItem>
+          </List>
+        </Box>
+      </Drawer>
+
       <div style={{ padding: '20px' }}>
         <HelloBeyondMD /> {/* Display a simple greeting component */}
         <CrudManager token={token} /> {/* CRUD management component, passing the token for API requests */}

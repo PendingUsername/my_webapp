@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { AppBar, Toolbar, Typography, IconButton, Switch } from '@mui/material';
+import { AppBar, Toolbar, Typography, IconButton, Switch, Button } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import HelloBeyondMD from './components/HelloBeyondMD';
@@ -50,6 +50,15 @@ function App() {
         main: '#dc004e',
       },
     },
+    typography: {
+      fontFamily: 'Roboto, Arial, sans-serif',
+      h6: {
+        fontWeight: 700,
+      },
+      button: {
+        textTransform: 'none',
+      },
+    },
     components: {
       MuiButton: {
         styleOverrides: {
@@ -78,18 +87,14 @@ function App() {
             {darkMode ? <Brightness7Icon /> : <Brightness4Icon />} {/* Toggle dark/light mode icon */}
           </IconButton>
           <Switch checked={darkMode} onChange={handleThemeChange} /> {/* Dark/light mode switch */}
-          <button
+          <Button
             onClick={handleLogout} // Logout user on button click
-            style={{
-              padding: '10px',
-              background: darkMode ? '#f44336' : '#1976d2',
-              color: 'white',
-              border: 'none',
-              cursor: 'pointer',
-            }}
+            variant="contained"
+            color="secondary"
+            style={{ marginLeft: '10px' }}
           >
             Logout
-          </button>
+          </Button>
         </Toolbar>
       </AppBar>
       <div style={{ padding: '20px' }}>

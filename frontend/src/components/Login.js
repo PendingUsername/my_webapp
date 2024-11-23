@@ -114,14 +114,19 @@ const Login = ({ setToken }) => {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
       <Paper
+        elevation={3}
         style={{
-          padding: '30px',
-          maxWidth: '400px',
+          padding: '40px',
+          maxWidth: '450px',
           width: '100%',
-          backgroundColor: theme.palette.mode === 'dark' ? '#424242' : '#ffffff',
+          backgroundColor: theme.palette.background.paper,
         }}
       >
-        <Typography variant="h4" style={{ marginBottom: '20px', textAlign: 'center' }}>
+        <Typography
+          variant="h4"
+          style={{ marginBottom: '30px', textAlign: 'center', fontWeight: 'bold' }}
+          color="primary"
+        >
           Login
         </Typography>
         <TextField
@@ -139,28 +144,27 @@ const Login = ({ setToken }) => {
           fullWidth
           value={password}
           onChange={(e) => setPassword(e.target.value)} // Update password state
-          style={{ marginBottom: '20px' }}
+          style={{ marginBottom: '30px' }}
         />
-        <Box display="flex" gap="10px" marginBottom="20px">
+        <Box display="flex" gap="15px" marginBottom="30px">
           <Button
             variant="contained"
             color="primary"
             onClick={handleLogin} // Trigger login function
             fullWidth
             style={{
-              padding: '10px',
-              backgroundColor: theme.palette.primary.main,
+              padding: '12px',
             }}
           >
             Login
           </Button>
           <Button
-            variant="contained"
+            variant="outlined"
             color="secondary"
             onClick={handleOpenSuperuserDialog} // Open superuser creation dialog
             fullWidth
             style={{
-              padding: '10px',
+              padding: '12px',
             }}
           >
             Create User
@@ -203,7 +207,7 @@ const Login = ({ setToken }) => {
           <Button onClick={handleCloseSuperuserDialog} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleCreateSuperuser} color="secondary">
+          <Button onClick={handleCreateSuperuser} variant="contained" color="secondary">
             Create User
           </Button>
         </DialogActions>

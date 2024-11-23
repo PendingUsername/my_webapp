@@ -1,3 +1,5 @@
+// src/components/CrudManager.js
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
@@ -12,7 +14,8 @@ import {
   Alert,
   Zoom,
   Slide,
-  Collapse
+  Collapse,
+  Typography
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -127,7 +130,7 @@ const CrudManager = ({ token }) => {
         })
         .then(() => {
           setItems(items.filter((item) => item.id !== itemId));
-          showSnackbar('Item deleted successfully!', 'error'); // Set severity to 'error' to show red snackbar
+          showSnackbar('Item deleted successfully!', 'error'); // Red snackbar for deletion
         })
         .catch((error) => {
           console.error('Error deleting item:', error);
@@ -154,7 +157,7 @@ const CrudManager = ({ token }) => {
   return (
     <div>
       <Box display="flex" justifyContent="space-between" alignItems="center" marginBottom="20px">
-        <h2>Manage Items</h2>
+        <Typography variant="h5">Manage Items</Typography>
         <Button
           variant="contained"
           color="primary"

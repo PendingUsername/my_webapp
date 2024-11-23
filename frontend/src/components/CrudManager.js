@@ -127,7 +127,7 @@ const CrudManager = ({ token }) => {
         })
         .then(() => {
           setItems(items.filter((item) => item.id !== itemId));
-          showSnackbar('Item deleted successfully!', 'success');
+          showSnackbar('Item deleted successfully!', 'error'); // Set severity to 'error' to show red snackbar
         })
         .catch((error) => {
           console.error('Error deleting item:', error);

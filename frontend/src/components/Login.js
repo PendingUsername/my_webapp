@@ -127,7 +127,7 @@ const Login = ({ setToken }) => {
           style={{ marginBottom: '30px', textAlign: 'center', fontWeight: 'bold' }}
           color="primary"
         >
-          Login
+          Login to BeyondMD CRUD
         </Typography>
         <TextField
           label="Username"

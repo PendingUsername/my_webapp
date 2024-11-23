@@ -188,14 +188,20 @@ const CrudManager = ({ token }) => {
             onChange={(e) => handleItemChange(index, 'name', e.target.value)}
             label="Item Name"
             variant="outlined"
-            style={{ marginRight: '10px', flexGrow: 1 }}
+            style={{ marginRight: '10px', minWidth: '200px' }}
+            InputProps={{
+              style: { maxWidth: '400px' }, // Set a maximum width to allow dynamic expansion
+            }}
           />
           <TextField
             value={item.description}
             onChange={(e) => handleItemChange(index, 'description', e.target.value)}
             label="Item Description"
             variant="outlined"
-            style={{ flexGrow: 1 }}
+            style={{ minWidth: '200px' }}
+            InputProps={{
+              style: { maxWidth: '400px' }, // Set a maximum width to allow dynamic expansion
+            }}
           />
           <IconButton
             edge="end"

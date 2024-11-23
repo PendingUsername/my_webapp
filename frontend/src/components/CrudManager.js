@@ -15,7 +15,6 @@ import {
   Zoom,
   Slide,
   Collapse,
-  Typography
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -130,7 +129,15 @@ const CrudManager = ({ token }) => {
         })
         .then(() => {
           setItems(items.filter((item) => item.id !== itemId));
-          showSnackbar('Item deleted successfully!', 'error'); // Red snackbar for deletion
+
+          // If the item being deleted is the one being edited, reset the edit state and input fields
+          if (itemToEdit && itemToEdit.id === itemId) {
+            setEditMode(false);
+            setItemToEdit(null);
+            setNewItems([{ name: '', description: '' }]);
+          }
+
+          showSnackbar('Item deleted successfully!', 'error');
         })
         .catch((error) => {
           console.error('Error deleting item:', error);
@@ -157,7 +164,7 @@ const CrudManager = ({ token }) => {
   return (
     <div>
       <Box display="flex" justifyContent="space-between" alignItems="center" marginBottom="20px">
-        <Typography variant="h5">Manage Items</Typography>
+        <h2>Manage Items</h2>
         <Button
           variant="contained"
           color="primary"

@@ -5,21 +5,16 @@ import axios from 'axios';
 import {
   TextField,
   Button,
-  List,
-  ListItem,
-  ListItemText,
-  IconButton,
   Box,
   Snackbar,
   Alert,
-  Zoom,
-  Slide,
-  Collapse,
+  IconButton,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { saveAs } from 'file-saver';
+import { DataGrid } from '@mui/x-data-grid';
 
 const CrudManager = ({ token }) => {
   const [items, setItems] = useState([]);
@@ -27,7 +22,6 @@ const CrudManager = ({ token }) => {
   const [editMode, setEditMode] = useState(false);
   const [itemToEdit, setItemToEdit] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
-  const [itemsToDelete, setItemsToDelete] = useState({});
 
   // Fetch items from the backend API when the component mounts
   useEffect(() => {
@@ -122,35 +116,22 @@ const CrudManager = ({ token }) => {
       });
   };
 
-  // Function to delete an item with animation
+  // Function to delete an item
   const deleteItem = (itemId) => {
-    // Track item to delete for collapsing animation
-    setItemsToDelete((prev) => ({ ...prev, [itemId]: true }));
-
-    setTimeout(() => {
-      axios
-        .delete(`http://localhost:8000/api/items/${itemId}/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then(() => {
-          setItems(items.filter((item) => item.id !== itemId));
-
-          // If the item being deleted is the one being edited, reset the edit state and input fields
-          if (itemToEdit && itemToEdit.id === itemId) {
-            setEditMode(false);
-            setItemToEdit(null);
-            setNewItems([{ name: '', description: '' }]);
-          }
-
-          showSnackbar('Item deleted successfully!', 'error');
-        })
-        .catch((error) => {
-          console.error('Error deleting item:', error);
-          showSnackbar('Failed to delete item.', 'error');
-        });
-    }, 500); // Adjust timeout to match the duration of the collapse animation
+    axios
+      .delete(`http://localhost:8000/api/items/${itemId}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(() => {
+        setItems(items.filter((item) => item.id !== itemId));
+        showSnackbar('Item deleted successfully!', 'error');
+      })
+      .catch((error) => {
+        console.error('Error deleting item:', error);
+        showSnackbar('Failed to delete item.', 'error');
+      });
   };
 
   // Function to download the resume
@@ -186,16 +167,32 @@ const CrudManager = ({ token }) => {
     showSnackbar('Items exported successfully!', 'success');
   };
 
+  const columns = [
+    { field: 'id', headerName: 'ID', width: 90 },
+    { field: 'name', headerName: 'Name', width: 150, editable: true },
+    { field: 'description', headerName: 'Description', width: 250, editable: true },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 150,
+      renderCell: (params) => (
+        <Box>
+          <IconButton edge="end" aria-label="edit" onClick={() => startEditItem(params.row)}>
+            <EditIcon />
+          </IconButton>
+          <IconButton edge="end" aria-label="delete" onClick={() => deleteItem(params.row.id)}>
+            <DeleteOutlineIcon />
+          </IconButton>
+        </Box>
+      ),
+    },
+  ];
+
   return (
     <div>
       <Box display="flex" justifyContent="space-between" alignItems="center" marginBottom="20px">
         <h2>Manage Items</h2>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<GetAppIcon />}
-          onClick={downloadResume}
-        >
+        <Button variant="contained" color="primary" startIcon={<GetAppIcon />} onClick={downloadResume}>
           Download Resume
         </Button>
       </Box>
@@ -222,12 +219,7 @@ const CrudManager = ({ token }) => {
               style: { maxWidth: '400px' },
             }}
           />
-          <IconButton
-            edge="end"
-            aria-label="delete"
-            onClick={() => removeNewItemField(index)}
-            style={{ marginLeft: '10px' }}
-          >
+          <IconButton edge="end" aria-label="delete" onClick={() => removeNewItemField(index)} style={{ marginLeft: '10px' }}>
             <DeleteOutlineIcon />
           </IconButton>
         </div>
@@ -242,50 +234,24 @@ const CrudManager = ({ token }) => {
         </Button>
       </Box>
 
-      <List>
-        {items.map((item) => (
-          <Collapse
-            in={!itemsToDelete[item.id]}
-            timeout={500}
-            key={item.id}
-          >
-            <Slide direction="right" in={true} timeout={500}>
-              <ListItem
-                secondaryAction={
-                  <>
-                    <IconButton edge="end" aria-label="edit" onClick={() => startEditItem(item)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton edge="end" aria-label="delete" onClick={() => deleteItem(item.id)}>
-                      <DeleteOutlineIcon />
-                    </IconButton>
-                  </>
-                }
-              >
-                <Zoom in={true} timeout={500}>
-                  <ListItemText primary={item.name} secondary={item.description} />
-                </Zoom>
-              </ListItem>
-            </Slide>
-          </Collapse>
-        ))}
-      </List>
+      <div style={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={items}
+          columns={columns}
+          pageSize={5}
+          rowsPerPageOptions={[5]}
+          checkboxSelection
+          disableSelectionOnClick
+        />
+      </div>
 
       <Box marginY="20px">
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={exportToCSV}
-        >
+        <Button variant="contained" color="secondary" onClick={exportToCSV}>
           Export to CSV
         </Button>
       </Box>
 
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3000}
-        onClose={handleCloseSnackbar}
-      >
+      <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
         <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
           {snackbar.message}
         </Alert>

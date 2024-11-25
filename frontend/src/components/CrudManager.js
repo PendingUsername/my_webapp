@@ -9,6 +9,7 @@ import {
   Snackbar,
   Alert,
   IconButton,
+  Tooltip,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -25,8 +26,10 @@ const CrudManager = ({ token }) => {
 
   // Fetch items from the backend API when the component mounts
   useEffect(() => {
-    fetchItems();
-  }, []);
+    if (token) {
+      fetchItems();
+    }
+  }, [token]);
 
   // Function to fetch all items from the API
   const fetchItems = () => {
@@ -177,12 +180,16 @@ const CrudManager = ({ token }) => {
       width: 150,
       renderCell: (params) => (
         <Box>
-          <IconButton edge="end" aria-label="edit" onClick={() => startEditItem(params.row)}>
-            <EditIcon />
-          </IconButton>
-          <IconButton edge="end" aria-label="delete" onClick={() => deleteItem(params.row.id)}>
-            <DeleteOutlineIcon />
-          </IconButton>
+          <Tooltip title="Edit Item">
+            <IconButton edge="end" aria-label="edit" onClick={() => startEditItem(params.row)}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete Item">
+            <IconButton edge="end" aria-label="delete" onClick={() => deleteItem(params.row.id)}>
+              <DeleteOutlineIcon />
+            </IconButton>
+          </Tooltip>
         </Box>
       ),
     },
@@ -192,9 +199,11 @@ const CrudManager = ({ token }) => {
     <div>
       <Box display="flex" justifyContent="space-between" alignItems="center" marginBottom="20px">
         <h2>Manage Items</h2>
-        <Button variant="contained" color="primary" startIcon={<GetAppIcon />} onClick={downloadResume}>
-          Download Resume
-        </Button>
+        <Tooltip title="Download Resume">
+          <Button variant="contained" color="primary" startIcon={<GetAppIcon />} onClick={downloadResume}>
+            Download Resume
+          </Button>
+        </Tooltip>
       </Box>
 
       {newItems.map((item, index) => (
@@ -219,9 +228,11 @@ const CrudManager = ({ token }) => {
               style: { maxWidth: '400px' },
             }}
           />
-          <IconButton edge="end" aria-label="delete" onClick={() => removeNewItemField(index)} style={{ marginLeft: '10px' }}>
-            <DeleteOutlineIcon />
-          </IconButton>
+          <Tooltip title="Remove Item">
+            <IconButton edge="end" aria-label="delete" onClick={() => removeNewItemField(index)} style={{ marginLeft: '10px' }}>
+              <DeleteOutlineIcon />
+            </IconButton>
+          </Tooltip>
         </div>
       ))}
 
@@ -246,9 +257,11 @@ const CrudManager = ({ token }) => {
       </div>
 
       <Box marginY="20px">
-        <Button variant="contained" color="secondary" onClick={exportToCSV}>
-          Export to CSV
-        </Button>
+        <Tooltip title="Export Items to CSV">
+          <Button variant="contained" color="secondary" onClick={exportToCSV}>
+            Export to CSV
+          </Button>
+        </Tooltip>
       </Box>
 
       <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>

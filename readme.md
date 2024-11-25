@@ -3,18 +3,22 @@
 **Login Page**
 
 ![Login Page](./backend/static/login.png)
+*This is the login page where users can enter their credentials.*
 
 **Crud Webapp**
 
 ![Crud](./backend/static/crud.png)
+*The CRUD application where users can manage their data.*
 
 **Dark mode**
 
 ![Crud dark](./backend/static/crud_dark.png)
+*The CRUD application in dark mode.*
 
 **Django Admin Page**
 
 ![Django](./backend/static/django_admin.png)
+*The Django admin interface for administrators.*
 
 This project is a full-stack web application that allows users to log in and manage data. It is built with Django for the backend and React for the frontend, containerized using Docker. The application also includes functionality to create superusers via a user-friendly interface.
 

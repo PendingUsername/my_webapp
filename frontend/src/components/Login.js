@@ -12,7 +12,10 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  IconButton,
+  InputAdornment,
 } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
 // Login component to handle user login and superuser creation
@@ -20,6 +23,7 @@ const Login = ({ setToken }) => {
   // State for login credentials
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // State for superuser dialog and new superuser details
   const [isSuperuserDialogOpen, setIsSuperuserDialogOpen] = useState(false);
@@ -28,6 +32,8 @@ const Login = ({ setToken }) => {
     newPassword: '',
     confirmPassword: '',
   });
+  const [showNewSuperuserPassword, setShowNewSuperuserPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Use theme to apply consistent styling
   const theme = useTheme();
@@ -111,6 +117,21 @@ const Login = ({ setToken }) => {
       });
   };
 
+  // Toggle password visibility
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
+
+  // Toggle new superuser password visibility
+  const handleToggleNewSuperuserPasswordVisibility = () => {
+    setShowNewSuperuserPassword((prevShowPassword) => !prevShowPassword);
+  };
+
+  // Toggle confirm password visibility
+  const handleToggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword((prevShowPassword) => !prevShowPassword);
+  };
+
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
       <Paper
@@ -134,23 +155,35 @@ const Login = ({ setToken }) => {
           variant="outlined"
           fullWidth
           value={username}
-          onChange={(e) => setUsername(e.target.value)} // Update username state
+          onChange={(e) => setUsername(e.target.value)}
           style={{ marginBottom: '20px' }}
         />
         <TextField
-          type="password"
+          type={showPassword ? 'text' : 'password'}
           label="Password"
           variant="outlined"
           fullWidth
           value={password}
-          onChange={(e) => setPassword(e.target.value)} // Update password state
+          onChange={(e) => setPassword(e.target.value)}
           style={{ marginBottom: '30px' }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={handleTogglePasswordVisibility}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <Box display="flex" gap="15px" marginBottom="30px">
           <Button
             variant="contained"
             color="primary"
-            onClick={handleLogin} // Trigger login function
+            onClick={handleLogin}
             fullWidth
             style={{
               padding: '12px',
@@ -161,7 +194,7 @@ const Login = ({ setToken }) => {
           <Button
             variant="outlined"
             color="secondary"
-            onClick={handleOpenSuperuserDialog} // Open superuser creation dialog
+            onClick={handleOpenSuperuserDialog}
             fullWidth
             style={{
               padding: '12px',
@@ -181,26 +214,50 @@ const Login = ({ setToken }) => {
             variant="outlined"
             fullWidth
             value={newSuperuserDetails.newUsername}
-            onChange={(e) => handleSuperuserInputChange('newUsername', e.target.value)} // Update new superuser username
+            onChange={(e) => handleSuperuserInputChange('newUsername', e.target.value)}
             style={{ marginBottom: '20px' }}
           />
           <TextField
-            type="password"
+            type={showNewSuperuserPassword ? 'text' : 'password'}
             label="Password"
             variant="outlined"
             fullWidth
             value={newSuperuserDetails.newPassword}
-            onChange={(e) => handleSuperuserInputChange('newPassword', e.target.value)} // Update new superuser password
+            onChange={(e) => handleSuperuserInputChange('newPassword', e.target.value)}
             style={{ marginBottom: '20px' }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleToggleNewSuperuserPasswordVisibility}
+                    edge="end"
+                  >
+                    {showNewSuperuserPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           <TextField
-            type="password"
+            type={showConfirmPassword ? 'text' : 'password'}
             label="Confirm Password"
             variant="outlined"
             fullWidth
             value={newSuperuserDetails.confirmPassword}
-            onChange={(e) => handleSuperuserInputChange('confirmPassword', e.target.value)} // Update password confirmation
+            onChange={(e) => handleSuperuserInputChange('confirmPassword', e.target.value)}
             style={{ marginBottom: '20px' }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleToggleConfirmPasswordVisibility}
+                    edge="end"
+                  >
+                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
         </DialogContent>
         <DialogActions>
